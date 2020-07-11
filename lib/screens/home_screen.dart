@@ -3,6 +3,8 @@ import 'package:news_mobile_application/screens/home_tabs/favourited.dart';
 import 'package:news_mobile_application/screens/home_tabs/popular.dart';
 import 'package:news_mobile_application/screens/home_tabs/whats_new.dart';
 import 'package:news_mobile_application/shared_ui/navigation_drawer.dart';
+import 'package:news_mobile_application/revision_api_one/category_api.dart';
+import 'package:news_mobile_application/api/author_api.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,8 +16,16 @@ enum mohamed { help, Setting, About, Find, CONTACT }
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  TabController
-  _tabController; //note that this should be used as a property to be seen for all methods
+
+  /*class properties */
+  AuthorApi mohamed_api=AuthorApi();
+  Categories category=Categories();
+  //note that this should be used as a property to be seen for all methods
+  TabController _tabController;
+
+
+
+  /*class methods needed*/
   @override
   void initState() {
     super.initState();
@@ -30,7 +40,11 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+
+   mohamed_api.fetchAllAuthor();
+//category.fetchingAllCategories();
+
+  return Scaffold(
       drawer: NavigationDrawer(),
       appBar: AppBar(
         title: Text(

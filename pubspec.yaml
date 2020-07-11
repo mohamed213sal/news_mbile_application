@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^0.1.3
   page_view_indicator: ^2.0.0
   shared_preferences: ^0.5.2
+  http: ^0.12.1
 
 dev_dependencies:
   flutter_test:
@@ -53,6 +54,7 @@ flutter:
      - 'assets/images/bg3.png'
      - 'assets/images/bg4.png'
      - 'assets/images/bg6.png'
+     - 'assets/images/bg7.png'
      - 'assets/images/bg10.png'
      - 'assets/images/bg11.png'
      - 'assets/images/bg12.png'
