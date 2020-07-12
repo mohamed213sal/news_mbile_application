@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:news_mobile_application/post_api_folder/post_api.dart';
+import 'dart:async';
+
+import 'package:news_mobile_application/post_api_folder/post_model.dart';
 
 class WhatsNew extends StatefulWidget {
   @override
@@ -7,12 +11,17 @@ class WhatsNew extends StatefulWidget {
 }
 
 class _WhatsNewState extends State<WhatsNew> {
+  PostModel2 postModel = PostModel2(); //just creating an object of this class
+Post post=Post();
+
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(children: <Widget>[
         _drawerHeader(context),
         _drawerTopStories(context),
+        _drawRecentUpdate(context),
       ]),
     );
   }
@@ -22,7 +31,7 @@ class _WhatsNewState extends State<WhatsNew> {
       //color: Colors.amber,
       color: Color(0xfafa),
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 2.0,
+      height: MediaQuery.of(context).size.height * 0.75,
       // height: double.infinity,
       child: Column(
         // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,14 +44,22 @@ class _WhatsNewState extends State<WhatsNew> {
           Padding(
             padding: EdgeInsets.all(8),
             child: Card(
-              child: Column(
-                children: <Widget>[
-                  _drawSingleRow(),
-                  _draweDivider(),
-                  _drawSingleRow(),
-                  _draweDivider(),
-                  _drawSingleRow(),
-                ],
+              child: FutureBuilder(
+                future: post.fetchingWhatsNew(),
+                builder: (context,AsyncSnapshot snapShot) {
+                  PostModel2 post1=snapShot.data[10];
+                  PostModel2 post2=snapShot.data[1];
+                  PostModel2 post3=snapShot.data[15];
+                  return Column(
+                    children: <Widget>[
+                      _drawSingleRow(post1),
+                      _draweDivider(),
+                      _drawSingleRow(post2),
+                      _draweDivider(),
+                      _drawSingleRow(post3),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -50,19 +67,22 @@ class _WhatsNewState extends State<WhatsNew> {
             padding: EdgeInsets.all(2),
             child: _drawSectionTopTitle('Recent Updates'),
           ),
-          Padding(
-              padding: EdgeInsets.all(2),
-              child: Column(
-                children: <Widget>[
-                  _drawRecentUpdatesCard(Colors.amber),
-                  _drawRecentUpdatesCard(Colors.deepPurple),
-                ],
-              )),
         ],
       ),
 
       //color:Color(0xfafa),
     );
+  }
+
+  Padding _drawRecentUpdate(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.all(2),
+        child: Column(
+          children: <Widget>[
+            _drawRecentUpdatesCard(Colors.amber),
+            _drawRecentUpdatesCard(Colors.deepPurple),
+          ],
+        ));
   }
 
   Widget _drawRecentUpdatesCard(Color color) {
@@ -95,7 +115,8 @@ class _WhatsNewState extends State<WhatsNew> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 0,right: 8,top: 8,bottom: 8),
+            padding:
+                const EdgeInsets.only(left: 0, right: 8, top: 8, bottom: 8),
             child: Text(
               "i don't know this is not the end of the game ya amer and i will kill you soon",
               style: TextStyle(
@@ -111,9 +132,15 @@ class _WhatsNewState extends State<WhatsNew> {
             //crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Icon(Icons.timer),
-              SizedBox(width:8,),
-              Text('15 min',style: TextStyle(fontSize: 16),),
-          ],)
+              SizedBox(
+                width: 8,
+              ),
+              Text(
+                '15 min',
+                style: TextStyle(fontSize: 16),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -138,7 +165,7 @@ class _WhatsNewState extends State<WhatsNew> {
     );
   }
 
-  Padding _drawSingleRow() {
+  Padding _drawSingleRow(PostModel2 post) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Row(
@@ -146,18 +173,16 @@ class _WhatsNewState extends State<WhatsNew> {
           SizedBox(
               width: 125,
               height: 125,
-              child: Image(
-                image: ExactAssetImage('assets/images/bg6.png'),
-                fit: BoxFit.cover,
-              )),
+              child: Image.network(post.featured_image,fit: BoxFit.cover,),),
           SizedBox(
             width: 15,
           ),
           Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  'The World global Warming Annual Summit',
+                 post.title,
                   maxLines: 2,
                   style: TextStyle(fontWeight: FontWeight.w800),
                 ),
