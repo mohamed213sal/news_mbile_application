@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_mobile_application/post_api_folder/post_api.dart';
+import 'package:news_mobile_application/category_api_folder/category_api.dart';
+import 'package:news_mobile_application/category_api_folder/category_model.dart';
+
 import 'dart:async';
 
 import 'package:news_mobile_application/post_api_folder/post_model.dart';
@@ -12,7 +15,9 @@ class WhatsNew extends StatefulWidget {
 
 class _WhatsNewState extends State<WhatsNew> {
   PostModel2 postModel = PostModel2(); //just creating an object of this class
-Post post=Post();
+ CategoryModel categoryModel=CategoryModel(); //hint we Must make the constructor optional and named by using {}
+  Post post=Post();
+  Categories categories=Categories(); //just taking an instance or an object of this class
 
 
   @override
@@ -44,12 +49,12 @@ Post post=Post();
           Padding(
             padding: EdgeInsets.all(8),
             child: Card(
-              child: FutureBuilder(
-                future: post.fetchingWhatsNew(),
+              child:FutureBuilder(
+                future:post.fetchingWhatsNew(),
                 builder: (context,AsyncSnapshot snapShot) {
-                  PostModel2 post1=snapShot.data[10];
-                  PostModel2 post2=snapShot.data[1];
-                  PostModel2 post3=snapShot.data[15];
+                  PostModel2 post1=snapShot.data[7];
+                  PostModel2 post2=snapShot.data[4];
+                  PostModel2 post3=snapShot.data[5];
                   return Column(
                     children: <Widget>[
                       _drawSingleRow(post1),
