@@ -1,15 +1,12 @@
-class PostModel2{
-  String id;
-  String title;
-  String content;
-  String date_written;
-  String featured_image;
+class Post {
+  String id, title, content, featured_image;
   int votesUp, votesDown;
   List<int> votersUp, votersDown;
   String userId, categoryId;
-
-  PostModel2({
-      this.id,
+String date_written;
+  //hint that this should be name constructor to use it easily ua_amer
+  Post(
+      {this.id,
       this.title,
       this.content,
       this.date_written,
@@ -20,11 +17,4 @@ class PostModel2{
       this.votersDown,
       this.userId,
       this.categoryId});
-
-  /*
-//very important hint by using {} with constructor we have to[Must]
-//write the name of variable first to be like this
-// id:"222",title:"mohamed amer title uaAmer",.....and so on
-*/
-
 }

@@ -7,8 +7,9 @@ import 'category_model.dart';
 class Categories {
   /*some properties needed for this class like URL and List for returned
   * comments*/
- //this  is the url for getting data from api
-  List<CategoryModel> categoryList = []; //=====> hint each item of this list contains ===> id,title
+  //this  is the url for getting data from api
+  List<CategoryModel> categoryList =
+      []; //=====> hint each item of this list contains ===> id,title
 
 /*some functions used for this class ua_amer*/
   Future<List<CategoryModel>> fetchingAllCategories() async {
@@ -32,3 +33,27 @@ class Categories {
     return categoryList;
   }
 } //that is great ua_amer problem solved for now got talent
+
+
+//just for revision ua_amer
+class Training {
+  List<CategoryModel> catList = [];
+
+  Future<List<CategoryModel>> fetchingAllCategories() async {
+    var response = await http.get("http://10.0.2.2:8000/api/categories");
+
+    if (response.statusCode == 200) {
+      var json_data = jsonDecode(response.body);
+      var array_data = json_data["data"];
+      for (var item in array_data) {
+        CategoryModel Amer = CategoryModel(
+          id: item["id"].toString(),
+          title: item["title"].toString(),
+        );
+        catList.add(Amer);
+      print(item["title"]);
+      }
+    }
+    return catList;
+  }
+}
