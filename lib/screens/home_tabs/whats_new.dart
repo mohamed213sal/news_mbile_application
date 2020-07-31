@@ -6,7 +6,8 @@ import 'package:news_mobile_application/post_api_folder/post_api.dart';
 import 'package:news_mobile_application/category_api_folder/category_api.dart';
 import 'package:news_mobile_application/category_api_folder/category_model.dart';
 import 'dart:async';
-
+import 'package:news_mobile_application/utilities/data_utilities.dart';
+import 'package:news_mobile_application/screens/home_tabs/single_post.dart';
 import 'package:news_mobile_application/post_api_folder/post_model.dart';
 
 class WhatsNew extends StatefulWidget {
@@ -26,7 +27,7 @@ class _WhatsNewState extends State<WhatsNew> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(children: <Widget>[
-        _drawerHeader(context),
+        _drawHeader(context),
         _drawerTopStories(context),
         _drawRecentUpdate(context),
       ]),
@@ -57,15 +58,16 @@ class _WhatsNewState extends State<WhatsNew> {
               builder: (context, AsyncSnapshot SnapShot) {
                 switch (SnapShot.connectionState) {
                   case ConnectionState.none:
-                    return _noConnection("Connection Failed");
+                    return noConnection("Connection Failed");
                   case ConnectionState.active:
-                    return _loading();
+                    return loading();
                   case ConnectionState.waiting:
-                    return _noConnection("Connection Failed");
+                    return loading();
                   // TO DO HANDLE THE NONE RETURNING DATA OR RESPONSE
                   case ConnectionState.done:
                     if (SnapShot.error != null) {
-                      return _error(" Error Cannot Connect To Server"); // TO HANDLE THE ERROR
+                      return error(
+                          " Error Cannot Connect To Server"); // TO HANDLE THE ERROR
                     } else {
                       // that is mean that every thing is going well ua_amer ,solved
                       if (SnapShot.hasData) {
@@ -83,11 +85,11 @@ class _WhatsNewState extends State<WhatsNew> {
                               _drawSingleRow(post3),
                             ],
                           );
-                        }else if(post.length==0){
-                          return _noData();
+                        } else if (post.length == 0) {
+                          return noData();
                         }
                       } else {
-                        return _noData(); //TO HANDLE SOME ERROR ON DATA
+                        return noData(); //TO HANDLE SOME ERROR ON DATA
                       }
                     }
                 }
@@ -105,123 +107,106 @@ class _WhatsNewState extends State<WhatsNew> {
     );
   }
 
-  Widget _noConnection(var none) {
-    return Container(
-      width: 200,
-      height: 200,
-      child: Center(
-          child: Text(
-        none.toString(),
-        style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),
-      )),
-    );
-  }
-
-  Widget _error(var error) {
-    return Container(
-      height: 200,
-      width: 200,
-      child: Center(
-        child: Text(
-          error.toString(),
-          style: TextStyle(color: Colors.red,fontWeight:FontWeight.w700),
-        ),
-      ),
-    );
-  }
-
-  Widget _noData() {
-    return Container(
-      height: 100,
-      width: 100,
-      child: Center(
-        child: Text(
-          "No Data Available",
-          style: TextStyle(color: Colors.red,fontWeight: FontWeight.w700),
-        ),
-      ),
-    );
-  }
-
-  Widget _loading() {
-    return Container(
-      padding: EdgeInsets.only(top: 16, bottom: 16),
-      child: Center(
-        child: CircularProgressIndicator(
-          backgroundColor: Colors.yellow,
-        ),
-      ),
-    );
-  }
-
   Padding _drawRecentUpdate(BuildContext context) {
     return Padding(
         padding: EdgeInsets.all(2),
-        child: Column(
-          children: <Widget>[
-            _drawRecentUpdatesCard(Colors.amber),
-            _drawRecentUpdatesCard(Colors.deepPurple),
-          ],
+        child: FutureBuilder(
+          future: postApi.fetchRecentUpdate(),
+          builder: (context, AsyncSnapshot snapShot) {
+            switch (snapShot.connectionState) {
+              case ConnectionState.waiting:
+                return loading();
+              case ConnectionState.active:
+                return loading();
+              case ConnectionState.none:
+                return noConnection("Connection Not Found ");
+              case ConnectionState.done:
+                if (snapShot.error != null) {
+                  return error("Error Found UA_Amer");
+                } else if (snapShot.hasData) {
+                  List<Post> post = snapShot.data;
+                  if (post.length >= 2) {
+                    Post post1 = snapShot.data[2];
+                    Post post2 = snapShot.data[0];
+                    return Column(
+                      children: <Widget>[
+                        _drawRecentUpdatesCard(Colors.amber, post1),
+                        _drawRecentUpdatesCard(Colors.deepPurple, post2),
+                      ],
+                    );
+                  }
+                } else {
+                  return error("Error Found");
+                }
+              // ignore: missing_return
+
+            }
+            return null;
+          },
         ));
   }
 
-  Widget _drawRecentUpdatesCard(Color color) {
+  Widget _drawRecentUpdatesCard(Color color, Post post) {
     return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
+      child: InkWell(
+        onLongPress: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context){
+            return SinglePost(post);
+          }));
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.20,
+                width: double.infinity,
+                child: Image.network(post.featured_image, fit: BoxFit.cover),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 4, bottom: 4, left: 0, right: 16),
+              padding: EdgeInsets.only(left: 32, top: 4, bottom: 4, right: 32),
               decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: ExactAssetImage('assets/images/bg6.png'),
-                    fit: BoxFit.cover),
+                color: color,
+                borderRadius: BorderRadius.circular(16),
               ),
-              height: MediaQuery.of(context).size.height * 0.20,
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 4, bottom: 4, left: 0, right: 16),
-            padding: EdgeInsets.only(left: 32, top: 4, bottom: 4, right: 32),
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Text(
-              'SPORT',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-            ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.only(left: 0, right: 8, top: 8, bottom: 8),
-            child: Text(
-              "i don't know this is not the end of the game ya amer and i will kill you soon",
-              style: TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.w800,
+              child: Text(
+                post.title,
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
               ),
-              textAlign: TextAlign.start,
-              maxLines: 3,
             ),
-          ),
-          Row(
-            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Icon(Icons.timer),
-              SizedBox(
-                width: 8,
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 0, right: 8, top: 8, bottom: 8),
+              child: Text(
+                post.content,
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w800,
+                ),
+                textAlign: TextAlign.start,
+                maxLines: 3,
               ),
-              Text(
-                '15 min',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          )
-        ],
+            ),
+            Row(
+              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Icon(Icons.timer),
+                SizedBox(
+                  width: 8,
+                ),
+                Text(
+                  post.date_written,
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -248,56 +233,145 @@ class _WhatsNewState extends State<WhatsNew> {
   Padding _drawSingleRow(Post post) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 125,
-            height: 125,
-            child: Image.network(
-              post.featured_image,
-              fit: BoxFit.cover,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return SinglePost(post);
+          }));
+        },
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 125,
+              height: 125,
+              child: Image.network(
+                post.featured_image,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          SizedBox(
-            width: 15,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  post.title,
-                  maxLines: 2,
-                  style: TextStyle(fontWeight: FontWeight.w800),
-                ),
-                Transform.translate(
-                  offset: Offset(0, 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(post.date_written.toString()),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Icon(Icons.timer),
-                          Text("15 Mins"),
-                        ],
-                      )
-                    ],
+            SizedBox(
+              width: 15,
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    post.title,
+                    maxLines: 2,
+                    style: TextStyle(fontWeight: FontWeight.w800),
                   ),
-                )
-              ],
+                  Transform.translate(
+                    offset: Offset(0, 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(post.date_written.toString()),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.timer),
+                            Text("15 Mins"),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Container _drawerHeader(BuildContext context) {
-    return Container(
+  Widget _drawHeader(BuildContext context) {
+    return FutureBuilder(
+        future: postApi.fetchPostsByCategories(),
+        builder: (context, AsyncSnapshot snapShot) {
+          switch (snapShot.connectionState) {
+            case ConnectionState.active:
+              return loading();
+            case ConnectionState.waiting:
+              return loading();
+            case ConnectionState.none:
+              return noData();
+            case ConnectionState.done:
+              if (snapShot.hasError) {
+                return error(
+                    "we Found some error while Loading these Information");
+              } else if (snapShot.hasData){
+                List<Post> posts = snapShot.data;
+                Random random = Random();
+                int randIndex = random.nextInt(posts.length);
+                Post post = posts[randIndex];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return SinglePost(post);
+                    }));
+                  },
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(post.featured_image),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 100),
+                          child: Expanded(
+                            child: Text(
+                              post.title,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w400),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                        Transform.translate(
+                          offset: Offset(0, 45),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 16, right: 8, left: 8),
+                            child: Expanded(
+                              child: Text(
+                                post.content,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              }
+          }
+          return Text("error");
+        });
+  }
+} //end of the method
+
+/*
+*
+*
+* Container(
       height: MediaQuery.of(context).size.height * 0.25,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
@@ -336,6 +410,4 @@ class _WhatsNewState extends State<WhatsNew> {
           )
         ],
       ),
-    );
-  }
-} //end of the method
+    );*/

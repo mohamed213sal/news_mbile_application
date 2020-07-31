@@ -74,21 +74,21 @@ class _HeadLineNewsState extends State<HeadLineNews>
       itemBuilder: (context) {
         return [
           PopupMenuItem<mohamed>(
-            value: mohamed.Find,
-            child: Text("find"),
+            value: mohamed.Contact,
+            child: Text("contact again"),
           ),
           PopupMenuItem<mohamed>(
-            value: mohamed.help,
+            value: mohamed.Help,
             child: Text("help"),
           ),
           PopupMenuItem<mohamed>(
-            value: mohamed.CONTACT,
+            value: mohamed.Contact,
             child: Text("Contact"),
           )
         ];
       },
       onSelected: (mohamed) {
-        print("what is the fack");
+        print("what is the the Awesome");
       },
       icon: Icon(Icons.more_vert),
       //initialValue:mohamed.CONTACT,

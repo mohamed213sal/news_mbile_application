@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:news_mobile_application/screens/home_tabs/favourited.dart';
 import 'package:news_mobile_application/screens/home_tabs/popular.dart';
@@ -6,6 +7,10 @@ import 'package:news_mobile_application/shared_ui/navigation_drawer.dart';
 import 'package:news_mobile_application/category_api_folder/category_api.dart';
 import 'package:news_mobile_application/api/author_api.dart';
 import 'package:news_mobile_application/post_api_folder/post_api.dart';
+import 'package:news_mobile_application/screens/home_tabs/menu_pages/about.dart';
+import 'package:news_mobile_application/screens/home_tabs/menu_pages/settings.dart';
+import 'package:news_mobile_application/screens/home_tabs/menu_pages/help.dart';
+import 'package:news_mobile_application/screens/home_tabs/menu_pages/contact.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,21 +18,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 //this should be out of the class ua amer problem solved
-enum mohamed { help, Setting, About, Find, CONTACT }
+enum mohamed { Help, Setting, About, Contact }
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-
   /*====class objects for test only ====== */
   //AuthorApi mohamed_api=AuthorApi();
   //Categories category=Categories();
   //Post post=Post();
 
-
   //note that this should be used as a property to be seen for all methods
   TabController _tabController;
-
-
 
   /*class methods needed*/
   @override
@@ -44,15 +45,12 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-
     // ====calling methods for testing not more =======
-   //mohamed_api.fetchAllAuthor();
-  //category.fetchingAllCategories();
- //post.fetchingWhatsNew() ;
+    //mohamed_api.fetchAllAuthor();
+    //category.fetchingAllCategories();
+    //post.fetchingWhatsNew() ;
 
-
-
-  return Scaffold(
+    return Scaffold(
       drawer: NavigationDrawer(),
       appBar: AppBar(
         title: Text(
@@ -66,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen>
               print('go one');
             },
           ),
-          _DrawPopOut(),
+          _drawPopOut(),
         ],
         bottom: TabBar(
           indicatorColor: Colors.black,
@@ -100,37 +98,76 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _DrawPopOut() {
-    return PopupMenuButton<mohamed>(itemBuilder: (context) {
-      return [
-        PopupMenuItem<mohamed>(
-          value: mohamed.About,
-          child: Text("ABOUT "),
-        ),
-        PopupMenuItem<mohamed>(
-          value: mohamed.Setting,
-          child: Text("SETTING"),
-        ),
-        PopupMenuItem<mohamed>(
-          value: mohamed.CONTACT,
-          child: Text("CONTACT"),
-        ),
-        PopupMenuItem<mohamed>(
-          value: mohamed.Find,
-          child: Text("FIND"),
-
-        ),
-        PopupMenuItem<mohamed>(
-          value: mohamed.help,
-          child: Text("HELP"),
-        ),
-      ];
-    },
-      onSelected: (mohamed menu) {},
+  Widget _drawPopOut() {
+    return PopupMenuButton<mohamed>(
+      shape: RoundedRectangleBorder(borderRadius:BorderRadius.all(Radius.circular(10))),
+      elevation: 10,
+      color: Colors.deepOrangeAccent,
+      itemBuilder: (context) {
+        return [
+          PopupMenuItem<mohamed>(
+            value: mohamed.About,
+            child: Text("ABOUT "),
+          ),
+          PopupMenuItem<mohamed>(
+            value: mohamed.Setting,
+            child: Text("SETTING"),
+          ),
+          PopupMenuItem<mohamed>(
+            value: mohamed.Contact,
+            child: Text("CONTACT"),
+          ),
+          PopupMenuItem<mohamed>(
+            value: mohamed.Help,
+            child: Text("HELP"),
+          ),
+        ];
+      },
+      onSelected: (mohamed menu) {
+        // ignore: missing_return
+        switch (menu) {
+          case mohamed.About:
+            return Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+              return About();
+            }));
+          case mohamed.Help:
+            return Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+              return Help();
+            }));
+          case mohamed.Contact:
+            return Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+              return Contact();
+            }));
+          case mohamed.Setting:
+            return Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+              return Settings();
+            }));
+        }
+        return null;
+      },
       icon: Icon(Icons.more_vert),
     );
   }
 
-
+  Widget _drawMenu() {
+    return PopupMenuButton(
+      itemBuilder: (context) {
+        return [
+          PopupMenuItem(
+            value: "Mohamed",
+            child: Text("mohamed"),
+          ),
+          PopupMenuItem(value: "Mohamed", child: Text("mohamed")),
+          PopupMenuItem(value: "Mohamed", child: Text("mohamed")),
+        ];
+      },
+      onSelected: (context) {
+        print("This is not great idea ua_amer");
+      },
+    );
+  }
 }
-

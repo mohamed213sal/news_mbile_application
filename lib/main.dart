@@ -7,7 +7,7 @@ import 'package:news_mobile_application/utilities/app_theme.dart';
 import 'package:news_mobile_application/screens/onBoarding.dart';
 import 'package:news_mobile_application/utilities/app_theme.dart';
 main() {
-runApp(NewsApp());
+  runApp(NewsApp());
 }
 
 class NewsApp extends StatelessWidget {
@@ -22,7 +22,6 @@ class NewsApp extends StatelessWidget {
   }
 
 }
-
 
 /*
 async {
